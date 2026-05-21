@@ -114,7 +114,7 @@ class VoteController extends Controller
                     'election_id'  => $electionId,
                     'position_id'  => $positionId,
                     'candidate_id' => $candidateId,
-                    'ip_address'   => request()->ip(),
+                    'ip_address'   => $request()->ip(),
                     'voted_at'     => now(),
                 ]);
             }
