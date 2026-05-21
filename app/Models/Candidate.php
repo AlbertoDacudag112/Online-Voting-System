@@ -8,7 +8,7 @@ class Candidate extends Model
 {
     protected $fillable = [
         'election_id', 'position_id', 'name',
-        'party', 'photo', 'bio',
+        'course', 'party', 'photo', 'bio',
     ];
 
     public function election() { return $this->belongsTo(Election::class); }

@@ -1,27 +1,210 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+        :root {
+            --ink: #0f1117;
+            --ink-soft: #1e2230;
+            --silver: #8a95a8;
+            --gold: #c9a84c;
+            --surface: #ffffff;
+            --surface-soft: #f7f8fa;
+            --border: #e2e5eb;
+            --danger: #c0392b;
+        }
+
+        .auth-wrap * {
+            font-family: 'DM Sans', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .auth-wrap {
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .auth-eyebrow-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border));
+        }
+
+        .auth-eyebrow-line.left {
+            background: linear-gradient(to left, transparent, var(--border));
+        }
+
+        .auth-eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+        }
+
+        .auth-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            margin: 0 0 6px 0;
+        }
+
+        .auth-subtitle {
+            font-size: 0.8rem;
+            color: var(--silver);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .auth-description {
+            font-size: 0.82rem;
+            color: var(--silver);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .auth-divider {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 24px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--silver);
+            margin-bottom: 7px;
+        }
+
+        .field-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--ink);
+            background: var(--surface-soft);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .field-group input:focus {
+            border-color: var(--gold);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+        }
+
+        .field-group .error-msg {
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px;
+            background: var(--ink);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-primary:hover {
+            background: var(--ink-soft);
+            transform: translateY(-1px);
+        }
+
+        .actions-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(201, 168, 76, 0.07);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #8a6a1e;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .secure-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+    </style>
+
+    <div class="auth-wrap">
+        <div class="auth-eyebrow">
+            <div class="auth-eyebrow-line left"></div>
+            <div class="auth-eyebrow-dot"></div>
+            <div class="auth-eyebrow-line"></div>
+        </div>
+
+        <h1 class="auth-title">Confirm access</h1>
+        <p class="auth-subtitle">Secure area</p>
+
+        <div class="secure-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Protected zone
+        </div>
+
+        <p class="auth-description">{{ __('This is a secure area of the application. Please confirm your password before continuing.') }}</p>
+
+        <div class="auth-divider"></div>
+
+        <form method="POST" action="{{ route('password.confirm') }}">
+            @csrf
+
+            <!-- Password -->
+            <div class="field-group">
+                <x-input-label for="password" :value="__('Password')" />
+                <x-text-input id="password" type="password" name="password" required autocomplete="current-password" />
+                <x-input-error :messages="$errors->get('password')" class="error-msg" />
+            </div>
+
+            <div class="actions-row">
+                <x-primary-button class="btn-primary">
+                    {{ __('Confirm') }}
+                </x-primary-button>
+            </div>
+        </form>
     </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
-
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
 </x-guest-layout>

@@ -57,5 +57,7 @@
         </table>
     </div>
 </div>
+@if($candidates->hasPages())
 <div class="mt-3">{{ $candidates->links() }}</div>
+@endif
 @endsection

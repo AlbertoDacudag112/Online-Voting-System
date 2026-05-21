@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\Position;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,8 @@ class CandidateController extends Controller
         $this->authorizeAdmin();
         $elections = Election::all();
         $positions = Position::all();
-        return view('candidates.form', compact('elections', 'positions'));
+        $courses   = User::COURSES;
+        return view('candidates.form', compact('elections', 'positions', 'courses'));
     }
 
     public function store(Request $request)
@@ -32,6 +34,7 @@ class CandidateController extends Controller
             'name'        => 'required|string|max:255',
             'election_id' => 'required|exists:elections,id',
             'position_id' => 'required|exists:positions,id',
+            'course'      => 'nullable|string',
             'photo'       => 'nullable|image|max:2048',
         ]);
 
@@ -44,6 +47,7 @@ class CandidateController extends Controller
             'name'        => $request->name,
             'election_id' => $request->election_id,
             'position_id' => $request->position_id,
+            'course'      => $request->course ?: null,
             'party'       => $request->party,
             'bio'         => $request->bio,
             'photo'       => $photoPath,
@@ -58,7 +62,8 @@ class CandidateController extends Controller
         $candidate = Candidate::findOrFail($id);
         $elections = Election::all();
         $positions = Position::all();
-        return view('candidates.form', compact('candidate', 'elections', 'positions'));
+        $courses   = User::COURSES;
+        return view('candidates.form', compact('candidate', 'elections', 'positions', 'courses'));
     }
 
     public function update(Request $request, $id)
@@ -68,11 +73,13 @@ class CandidateController extends Controller
             'name'        => 'required|string|max:255',
             'election_id' => 'required|exists:elections,id',
             'position_id' => 'required|exists:positions,id',
+            'course'      => 'nullable|string',
             'photo'       => 'nullable|image|max:2048',
         ]);
 
         $candidate = Candidate::findOrFail($id);
         $data = $request->only('name', 'election_id', 'position_id', 'party', 'bio');
+        $data['course'] = $request->course ?: null;
 
         if ($request->hasFile('photo')) {
             if ($candidate->photo) Storage::disk('public')->delete($candidate->photo);

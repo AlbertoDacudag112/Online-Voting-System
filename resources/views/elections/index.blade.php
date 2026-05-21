@@ -44,6 +44,9 @@
                         <a href="{{ route('elections.show', $election->id) }}" class="btn btn-sm btn-info text-white">
                             <i class="bi bi-eye"></i>
                         </a>
+                        <a href="{{ route('elections.results', $election->id) }}" class="btn btn-sm btn-warning" title="View Results">
+                            <i class="bi bi-trophy-fill"></i>
+                        </a>
                         @if(Auth::user()->role === 'admin')
                         <a href="{{ route('elections.edit', $election->id) }}" class="btn btn-sm btn-warning">
                             <i class="bi bi-pencil"></i>

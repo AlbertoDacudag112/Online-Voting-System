@@ -69,6 +69,19 @@
             </div>
 
             <div class="mb-3">
+                <label for="course" class="form-label fw-semibold">Course / Department <small class="text-muted fw-normal">(leave blank if open to all)</small></label>
+                <select class="form-select @error('course') is-invalid @enderror" id="course" name="course">
+                    <option value="">— All Courses —</option>
+                    @foreach($courses as $key => $label)
+                        <option value="{{ $key }}" {{ old('course', $candidate->course ?? '') === $key ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('course')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-3">
                 <label for="bio" class="form-label fw-semibold">Bio / Platform</label>
                 <textarea class="form-control @error('bio') is-invalid @enderror"
                           id="bio" name="bio" rows="4"

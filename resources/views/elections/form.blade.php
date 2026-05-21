@@ -54,14 +54,28 @@
                 </div>
             </div>
 
-            <div class="mb-4">
-                <label for="status" class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
-                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                    <option value="upcoming" {{ old('status', $election->status ?? '') === 'upcoming' ? 'selected' : '' }}>Upcoming</option>
-                    <option value="active"   {{ old('status', $election->status ?? '') === 'active'   ? 'selected' : '' }}>Active</option>
-                    <option value="closed"   {{ old('status', $election->status ?? '') === 'closed'   ? 'selected' : '' }}>Closed</option>
-                </select>
-                @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label for="status" class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                        <option value="upcoming" {{ old('status', $election->status ?? '') === 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+                        <option value="active"   {{ old('status', $election->status ?? '') === 'active'   ? 'selected' : '' }}>Active</option>
+                        <option value="closed"   {{ old('status', $election->status ?? '') === 'closed'   ? 'selected' : '' }}>Closed</option>
+                    </select>
+                    @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="course" class="form-label fw-semibold">Restrict to Course <small class="text-muted fw-normal">(leave blank for all courses)</small></label>
+                    <select class="form-select @error('course') is-invalid @enderror" id="course" name="course">
+                        <option value="">— All Courses —</option>
+                        @foreach($courses as $key => $label)
+                            <option value="{{ $key }}" {{ old('course', $election->course ?? '') === $key ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('course')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
             </div>
 
             <div class="d-flex gap-2">

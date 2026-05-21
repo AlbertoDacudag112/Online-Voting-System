@@ -19,7 +19,8 @@ return new class extends Migration
         $table->foreignId('candidate_id')->constrained()->cascadeOnDelete();
         $table->string('ip_address')->nullable();
         $table->datetime('voted_at')->nullable();
-        });
+        $table->timestamps();
+});
     }
 
     /**

@@ -4,9 +4,14 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3><i class="bi bi-card-list"></i> {{ $election->title }}</h3>
-    <a href="{{ route('elections.index') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Back
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('elections.results', $election->id) }}" class="btn btn-warning btn-sm">
+            <i class="bi bi-trophy-fill"></i> View Results
+        </a>
+        <a href="{{ route('elections.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
 </div>
 
 <div class="row g-4">

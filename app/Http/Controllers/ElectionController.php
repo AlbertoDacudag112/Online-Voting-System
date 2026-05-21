@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Election;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +18,8 @@ class ElectionController extends Controller
     public function create()
     {
         $this->authorizeAdmin();
-        return view('elections.form');
+        $courses = User::COURSES;
+        return view('elections.form', compact('courses'));
     }
 
     public function store(Request $request)
@@ -28,6 +30,7 @@ class ElectionController extends Controller
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after:start_date',
             'status'     => 'required|in:upcoming,active,closed',
+            'course'     => 'nullable|string',
         ]);
 
         Election::create([
@@ -36,6 +39,7 @@ class ElectionController extends Controller
             'start_date'  => $request->start_date,
             'end_date'    => $request->end_date,
             'status'      => $request->status,
+            'course'      => $request->course ?: null,
             'created_by'  => Auth::id(),
         ]);
 
@@ -48,11 +52,37 @@ class ElectionController extends Controller
         return view('elections.show', compact('election'));
     }
 
+    public function results($id)
+    {
+        $election = Election::with([
+            'positions' => fn($q) => $q->orderBy('display_order'),
+            'positions.candidates.votes',
+        ])->findOrFail($id);
+
+        $positions = $election->positions->map(function ($position) {
+            $candidates = $position->candidates->map(function ($candidate) {
+                $candidate->vote_count = $candidate->votes->count();
+                return $candidate;
+            })->sortByDesc('vote_count')->values();
+
+            $position->sorted_candidates = $candidates;
+            $position->winner = $candidates->first();
+            return $position;
+        });
+
+        $byCourse = $positions->groupBy(function ($position) {
+            return $position->candidates->first()?->course ?? 'General';
+        });
+
+        return view('elections.results', compact('election', 'positions', 'byCourse'));
+    }
+
     public function edit($id)
     {
         $this->authorizeAdmin();
         $election = Election::findOrFail($id);
-        return view('elections.form', compact('election'));
+        $courses  = User::COURSES;
+        return view('elections.form', compact('election', 'courses'));
     }
 
     public function update(Request $request, $id)
@@ -63,10 +93,18 @@ class ElectionController extends Controller
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after:start_date',
             'status'     => 'required|in:upcoming,active,closed',
+            'course'     => 'nullable|string',
         ]);
 
         $election = Election::findOrFail($id);
-        $election->update($request->only('title', 'description', 'start_date', 'end_date', 'status'));
+        $election->update([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'start_date'  => $request->start_date,
+            'end_date'    => $request->end_date,
+            'status'      => $request->status,
+            'course'      => $request->course ?: null,
+        ]);
 
         return redirect()->route('elections.index')->with('success', 'Election updated successfully.');
     }
